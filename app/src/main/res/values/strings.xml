@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">Webcams</string>
+    <string name="action_settings">Settings</string>
+    <string name="filter">Filter</string>
+    <string name="about">About</string>
+    <string name="about_text">Mobile app \"Webcams\"</string>
+    <string name="about_email" translatable="false">obrekht@gmail.com</string>
+    <string name="about_name">Nikita Obrekht</string>
+    <string name="error">Error</string>
+    <string name="error_description">Unfortunately, an error occurred.\nPlease, try again later or contact us by phone.</string>
+    <string name="phone_number" translatable="false">+7 (123) 456-78-90</string>
+</resources>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Онлайн-камеры</string>
+    <string name="about">О приложении</string>
+    <string name="about_name">Никита Обрехт</string>
+    <string name="about_text">Мобильное-приложение «Онлайн-камеры» позволит вам получить мгоновенный доступ к камерам всего мира с вашего телефона.</string>
+    <string name="filter">Фильтр</string>
+    <string name="action_settings">Настройки</string>
+    <string name="error">Ошибка</string>
+    <string name="error_description">К сожалению, произошла ошибка.\nПожалуйста, повторите попытку позже или обратитесь к нам по телефону.</string>
+</resources>
