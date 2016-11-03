@@ -10,13 +10,7 @@
 
 package com.obrekht.onlinecameras.app;
 
-import android.util.Log;
-
-import com.obrekht.onlinecameras.model.Webcam;
 import com.obrekht.onlinecameras.model.WebcamsResponse;
-
-import java.util.List;
-import java.util.Locale;
 
 import rx.Observable;
 
@@ -28,20 +22,11 @@ public class WebcamsService {
         this.webcamsApi = webcamsApi;
     }
 
-    public Observable<List<Webcam>> getNearbyWebcams(double latitude, double longitude,
-                                                     double radius, int page) {
+    public Observable<WebcamsResponse.Result> getNearbyWebcams(double latitude, double longitude,
+                                                               double radius, int page) {
         return webcamsApi.getNearbyWebcams(latitude, longitude, radius,
                 WebcamsApi.DEFAULT_LIMIT, WebcamsApi.DEFAULT_LIMIT * (page - 1))
-                .map(webcamsResponse -> {
-
-                    WebcamsResponse.Result result = webcamsResponse.getResult();
-                    Log.d("WebcamsService", String.format(Locale.getDefault(),
-                            "status: %s; limit: %d; offset: %d; total: %d; webcams: %d",
-                            webcamsResponse.getStatus(), result.limit, result.offset, result.total,
-                            result.webcams.size()));
-
-                    return result.webcams;
-                });
+                .map(WebcamsResponse::getResult);
     }
 
 //    public Observable<List<Place>> getNearbyWebcamLocations(double latitude, double longitude,

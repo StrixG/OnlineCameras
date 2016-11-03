@@ -7,7 +7,7 @@ import retrofit2.http.Path;
 import rx.Observable;
 
 public interface WebcamsApi {
-    int DEFAULT_RADIUS = 150;
+    int DEFAULT_RADIUS = 80;
     int DEFAULT_LIMIT = 10;
 
     @GET("list/nearby={lat},{lng},{radius}/limit={limit},{offset}/orderby=distance/" +

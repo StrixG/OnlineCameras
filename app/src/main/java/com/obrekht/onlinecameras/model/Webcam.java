@@ -15,7 +15,7 @@ public class Webcam {
     private WebcamLocation location;
     private TimelapseList timelapse;
     @SerializedName("category")
-    private List<Category> categories = new ArrayList<>();
+    private List<WebcamCategory> categories = new ArrayList<>();
 
     public String getId() {
         return id;
@@ -41,7 +41,9 @@ public class Webcam {
         return timelapse;
     }
 
-    public List<Category> getCategories() {
+    public List<WebcamCategory> getCategories() {
         return categories;
     }
+
+
 }

@@ -23,7 +23,7 @@ public class WebcamsResponse {
         public Integer total;
 
         public List<Webcam> webcams;
-        public List<Category> categories;
+        public List<WebcamCategory> categories;
         public List<Region> regions;
     }
 }

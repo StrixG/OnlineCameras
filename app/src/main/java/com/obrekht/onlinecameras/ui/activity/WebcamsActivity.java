@@ -14,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.arellomobile.mvp.MvpAppCompatActivity;
 import com.arellomobile.mvp.presenter.InjectPresenter;
@@ -21,7 +22,7 @@ import com.obrekht.onlinecameras.R;
 import com.obrekht.onlinecameras.model.Webcam;
 import com.obrekht.onlinecameras.presenter.WebcamsPresenter;
 import com.obrekht.onlinecameras.ui.adapter.WebcamsAdapter;
-import com.obrekht.onlinecameras.ui.common.EndlessRecyclerViewScrollListener;
+import com.obrekht.onlinecameras.ui.common.EndlessScrollListener;
 import com.obrekht.onlinecameras.ui.common.GridAutofitLayoutManager;
 import com.obrekht.onlinecameras.ui.common.GridOffsetItemDecoration;
 import com.obrekht.onlinecameras.view.WebcamsView;
@@ -61,7 +62,7 @@ public class WebcamsActivity extends MvpAppCompatActivity implements WebcamsView
     private MenuItem filterMenuItem;
 
     private WebcamsAdapter webcamsAdapter;
-    private EndlessRecyclerViewScrollListener scrollListener;
+    private EndlessScrollListener webcamsScrollListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,34 +78,6 @@ public class WebcamsActivity extends MvpAppCompatActivity implements WebcamsView
         initFilterList();
         initSwipeRefreshLayout();
         initLocationsList();
-    }
-
-    private void initSwipeRefreshLayout() {
-        swipeRefreshLayout.setOnRefreshListener(() -> {
-            webcamsPresenter.loadWebcams(true);
-        });
-    }
-
-    private void initLocationsList() {
-        webcamsList.setHasFixedSize(true);
-
-        GridAutofitLayoutManager layoutManager = new GridAutofitLayoutManager(this, getResources()
-                .getDimensionPixelOffset(R.dimen.location_list_item_width));
-        webcamsList.setLayoutManager(layoutManager);
-
-        webcamsAdapter = new WebcamsAdapter();
-        webcamsList.setAdapter(webcamsAdapter);
-
-        webcamsList.addItemDecoration(new GridOffsetItemDecoration(getResources()
-                .getDimensionPixelOffset(R.dimen.location_list_item_padding)));
-
-        scrollListener = new EndlessRecyclerViewScrollListener(layoutManager,
-                (page, totalItemsCount, view) -> webcamsPresenter.loadNextWebcams(page));
-
-        webcamsList.addOnScrollListener(scrollListener);
-    }
-
-    private void initFilterList() {
     }
 
     @Override
@@ -137,6 +110,42 @@ public class WebcamsActivity extends MvpAppCompatActivity implements WebcamsView
         return super.onOptionsItemSelected(item);
     }
 
+    private void initSwipeRefreshLayout() {
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+            webcamsScrollListener.resetState();
+            webcamsPresenter.loadWebcams(true);
+        });
+    }
+
+    private void initLocationsList() {
+        webcamsList.setHasFixedSize(true);
+
+        GridAutofitLayoutManager layoutManager = new GridAutofitLayoutManager(this, getResources()
+                .getDimensionPixelOffset(R.dimen.location_list_item_width));
+        webcamsList.setLayoutManager(layoutManager);
+
+        webcamsAdapter = new WebcamsAdapter();
+        webcamsAdapter.setWebcamClickListener((position, webcam) ->
+                Toast.makeText(this, webcam.getTitle(), Toast.LENGTH_SHORT).show());
+        webcamsAdapter.setLocationClickListener((position, webcam) ->
+                webcamsPresenter.onLocationSelection(position, webcam));
+        webcamsList.setAdapter(webcamsAdapter);
+
+        webcamsList.addItemDecoration(new GridOffsetItemDecoration(getResources()
+                .getDimensionPixelOffset(R.dimen.location_list_item_padding)));
+
+        webcamsScrollListener = new EndlessScrollListener(layoutManager,
+                (page, totalItemsCount, view) -> {
+                    webcamsList.post(() -> webcamsAdapter.setLoading(true));
+                    webcamsPresenter.loadNextWebcams(page);
+                });
+
+        webcamsList.addOnScrollListener(webcamsScrollListener);
+    }
+
+    private void initFilterList() {
+    }
+
     @Override
     public void toggleFilterDrawer() {
         if (filterDrawer.isDrawerOpen(GravityCompat.END)) {
@@ -167,12 +176,12 @@ public class WebcamsActivity extends MvpAppCompatActivity implements WebcamsView
 
     @Override
     public void onStartLoading() {
-
     }
 
     @Override
     public void onFinishLoading() {
-        scrollListener.resetState();
+        webcamsAdapter.setLoading(false);
+        webcamsScrollListener.setLoading(false);
     }
 
     @Override
@@ -200,18 +209,25 @@ public class WebcamsActivity extends MvpAppCompatActivity implements WebcamsView
 
     @Override
     public void setWebcams(List<Webcam> webcams, boolean maybeMore) {
-        webcamsAdapter.setWebcams(webcams, maybeMore);
+        hideError();
+        if (!maybeMore) {
+            webcamsScrollListener.setLoadMoreAvailable(false);
+        }
+        webcamsAdapter.setWebcams(webcams);
     }
 
     @Override
     public void addWebcams(List<Webcam> webcams, boolean maybeMore) {
-        webcamsAdapter.addWebcams(webcams, maybeMore);
+        if (!maybeMore) {
+            webcamsScrollListener.setLoadMoreAvailable(false);
+        }
+        webcamsAdapter.addWebcams(webcams);
     }
 
     @Override
-    public void showLocation(double latitude, double longitude) {
-        Uri mapUri = Uri.parse(String.format(Locale.getDefault(),
-                "geo:%f,%f", latitude, longitude));
+    public void showLocationOnMap(String label, double latitude, double longitude) {
+        Uri mapUri = Uri.parse(String.format(Locale.US,
+                "geo:%f,%f?q=%f,%f(%s)", latitude, longitude, latitude, longitude, label));
         Intent mapIntent = new Intent(Intent.ACTION_VIEW, mapUri);
         startActivity(mapIntent);
     }

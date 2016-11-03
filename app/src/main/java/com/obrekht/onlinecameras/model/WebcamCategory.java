@@ -1,6 +1,6 @@
 package com.obrekht.onlinecameras.model;
 
-public class Category {
+public class WebcamCategory {
 
     private String id;
     private String name;

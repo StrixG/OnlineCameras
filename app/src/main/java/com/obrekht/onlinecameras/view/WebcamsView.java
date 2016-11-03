@@ -10,7 +10,7 @@ import java.util.List;
 public interface WebcamsView extends MvpView {
     void toggleFilterDrawer();
 
-    void showLocation(double latitude, double longitude);
+    void showLocationOnMap(String label, double latitude, double longitude);
 
     void showError();
 

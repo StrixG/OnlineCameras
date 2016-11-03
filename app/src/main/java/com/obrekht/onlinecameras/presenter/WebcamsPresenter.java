@@ -10,10 +10,12 @@ import com.obrekht.onlinecameras.app.WebcamsApp;
 import com.obrekht.onlinecameras.app.WebcamsService;
 import com.obrekht.onlinecameras.model.Webcam;
 import com.obrekht.onlinecameras.model.WebcamLocation;
+import com.obrekht.onlinecameras.model.WebcamsResponse;
 import com.obrekht.onlinecameras.view.WebcamsView;
 import com.tbruyelle.rxpermissions.RxPermissions;
 
 import java.util.List;
+import java.util.Locale;
 
 import javax.inject.Inject;
 
@@ -42,14 +44,12 @@ public class WebcamsPresenter extends MvpPresenter<WebcamsView> {
 
     }
 
-    public void onLocationSelection(int position, WebcamLocation location) {
-        getViewState().showLocation(location.getLatitude(), location.getLongitude());
+    public void onLocationSelection(int position, Webcam webcam) {
+        WebcamLocation location = webcam.getLocation();
+        getViewState().showLocationOnMap(webcam.getTitle(), location.getLatitude(), location.getLongitude());
     }
 
-    public void loadNextWebcams(int currentCount) {
-        Log.d("WebcamsPresenter", "loadNextWebcams");
-        int page = currentCount / WebcamsApi.DEFAULT_LIMIT + 1;
-
+    public void loadNextWebcams(int page) {
         loadData(page, true, false);
     }
 
@@ -68,15 +68,20 @@ public class WebcamsPresenter extends MvpPresenter<WebcamsView> {
 
         showProgress(isPageLoading, isRefreshing);
 
-        final Observable<List<Webcam>> observable = webcamsService.getNearbyWebcams(
+        final Observable<WebcamsResponse.Result> observable = webcamsService.getNearbyWebcams(
                 54.7229841, 20.526418, WebcamsApi.DEFAULT_RADIUS, page);
 
         observable
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(webcams -> {
+                .subscribe(result -> {
+                    Log.d("WebcamsPresenter", String.format(Locale.getDefault(),
+                            "limit: %d; offset: %d; total: %d; webcams: %d",
+                            result.limit, result.offset, result.total,
+                            result.webcams.size()));
+
                     onLoadingFinish(isPageLoading, isRefreshing);
-                    onLoadingSuccess(isPageLoading, webcams);
+                    onLoadingSuccess(isPageLoading, result.webcams, result.offset, result.total);
                 }, error -> {
                     onLoadingFinish(isPageLoading, isRefreshing);
                     onLoadingFailed();
@@ -92,9 +97,9 @@ public class WebcamsPresenter extends MvpPresenter<WebcamsView> {
         hideProgress(isPageLoading, isRefreshing);
     }
 
-    private void onLoadingSuccess(boolean isPageLoading, List<Webcam> webcams) {
-        boolean maybeMore = webcams.size() >= WebcamsApi.DEFAULT_LIMIT;
-        if (isPageLoading) {
+    private void onLoadingSuccess(boolean isPageLoading, List<Webcam> webcams, int offset, int total) {
+        boolean maybeMore = offset + webcams.size() < total;
+        if (isPageLoading && webcams.size() > 0) {
             Log.d("WebcamsPresenter", "addWebcams");
             getViewState().addWebcams(webcams, maybeMore);
         } else {
@@ -129,9 +134,5 @@ public class WebcamsPresenter extends MvpPresenter<WebcamsView> {
         } else {
             getViewState().hideProgress();
         }
-    }
-
-    public void closeError() {
-        getViewState().hideError();
     }
 }

@@ -23,6 +23,7 @@
             android:layout_marginRight="@dimen/webcam_card_margin"
             android:layout_marginStart="@dimen/webcam_card_margin"
             android:layout_marginTop="@dimen/webcam_card_margin"
+            android:ellipsize="marquee"
             android:maxLines="1"
             android:text="@string/about"
             android:textAppearance="@style/TextAppearance.AppCompat.Small"/>
@@ -36,7 +37,10 @@
             android:layout_marginLeft="@dimen/webcam_card_margin"
             android:layout_marginRight="@dimen/webcam_card_margin"
             android:layout_marginStart="@dimen/webcam_card_margin"
+            android:ellipsize="marquee"
+            android:marqueeRepeatLimit="marquee_forever"
             android:maxLines="1"
+            android:singleLine="true"
             android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
             tools:text="@string/about"/>
 

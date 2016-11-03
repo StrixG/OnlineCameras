@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,8 +12,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.obrekht.onlinecameras.R;
-import com.obrekht.onlinecameras.model.Category;
 import com.obrekht.onlinecameras.model.Webcam;
+import com.obrekht.onlinecameras.model.WebcamCategory;
 import com.obrekht.onlinecameras.model.WebcamLocation;
 import com.squareup.picasso.Picasso;
 
@@ -22,7 +23,6 @@ import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 
 public class WebcamsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
@@ -30,11 +30,15 @@ public class WebcamsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     public static final int VIEW_TYPE_PROGRESS = 1;
 
     private List<Webcam> webcams = new ArrayList<>();
+    private boolean loading;
+
+    private OnWebcamClickListener webcamClickListener;
+    private OnLocationClickListener locationClickListener;
 
     public WebcamsAdapter() {
     }
 
-    private Webcam getItem(int position) {
+    public Webcam getItem(int position) {
         return webcams.get(position);
     }
 
@@ -45,31 +49,39 @@ public class WebcamsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
         RecyclerView.ViewHolder holder;
 
-        if (viewType == VIEW_TYPE_WEBCAM) {
-            View itemView = inflater.inflate(R.layout.item_webcam, parent, false);
-
-            holder = new WebcamViewHolder(itemView);
+        if (loading && viewType == VIEW_TYPE_PROGRESS) {
+            holder = new ProgressViewHolder(
+                    inflater.inflate(R.layout.item_progress, parent, false));
         } else {
-            View itemView = inflater.inflate(R.layout.item_progress, parent, false);
-
-            holder = new ProgressViewHolder(itemView);
+            holder = new WebcamViewHolder(
+                    inflater.inflate(R.layout.item_webcam, parent, false));
         }
 
         return holder;
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
         if (holder instanceof WebcamViewHolder) {
             WebcamViewHolder webcamHolder = (WebcamViewHolder) holder;
             Webcam webcam = getItem(position);
 
-            webcamHolder.text1
-                    .setText(getCategoriesString(webcam.getCategories()));
-            webcamHolder.text2
-                    .setText(webcam.getTitle());
-            webcamHolder.location
-                    .setText(getLocationString(webcam.getLocation()));
+            webcamHolder.text1.setText(getCategoriesString(webcam.getCategories()));
+            webcamHolder.text2.setText(webcam.getTitle());
+            webcamHolder.text2.setSelected(true);
+            webcamHolder.location.setText(getLocationString(webcam.getLocation()));
+
+            webcamHolder.itemView.setOnClickListener(view -> {
+                if (webcamClickListener != null) {
+                    webcamClickListener.onWebcamClick(position, webcam);
+                }
+            });
+
+            webcamHolder.locationLayout.setOnClickListener(view -> {
+                if (locationClickListener != null) {
+                    locationClickListener.onLocationClick(position, webcam);
+                }
+            });
 
             Picasso.with(webcamHolder.webcamPicture.getContext())
                     .load(webcam.getImage().getCurrent().imageUrl)
@@ -83,20 +95,32 @@ public class WebcamsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     @Override
     public int getItemViewType(int position) {
-        return position == webcams.size() ? VIEW_TYPE_PROGRESS : VIEW_TYPE_WEBCAM;
+        return (loading && position == webcams.size()) ? VIEW_TYPE_PROGRESS : VIEW_TYPE_WEBCAM;
     }
 
     @Override
     public int getItemCount() {
+        return webcams.size() + (loading ? 1 : 0);
+    }
+
+    public int getWebcamsCount() {
         return webcams.size();
     }
 
-    private static String getCategoriesString(List<Category> categories) {
+    public void setWebcamClickListener(OnWebcamClickListener webcamClickListener) {
+        this.webcamClickListener = webcamClickListener;
+    }
+
+    public void setLocationClickListener(OnLocationClickListener locationClickListener) {
+        this.locationClickListener = locationClickListener;
+    }
+
+    private static String getCategoriesString(List<WebcamCategory> categories) {
         String categoriesStr = "";
 
         for (int i = 0; i < categories.size(); i++) {
             categoriesStr += categories.get(i).getName();
-            if (i != categories.size() - 1) {
+            if (i != (categories.size() - 1)) {
                 categoriesStr += ", ";
             }
         }
@@ -109,7 +133,7 @@ public class WebcamsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 "%s, %s, %s", location.getCountry(), location.getRegion(), location.getCity());
     }
 
-    public void setWebcams(List<Webcam> webcams, boolean maybeMore) {
+    public void setWebcams(List<Webcam> webcams) {
         final WebcamDiffCallback diffCallback = new WebcamDiffCallback(this.webcams, webcams);
         final DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(diffCallback);
 
@@ -118,10 +142,24 @@ public class WebcamsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         diffResult.dispatchUpdatesTo(this);
     }
 
-    public void addWebcams(List<Webcam> webcams, boolean maybeMore) {
+    public void addWebcams(List<Webcam> webcams) {
         final int oldSize = this.webcams.size();
         this.webcams.addAll(webcams);
         notifyItemRangeInserted(oldSize, webcams.size());
+    }
+
+    public void setLoading(boolean loading) {
+        Log.d("WebcamsAdapter", "Loading: " + loading + ", " + (getItemViewType(webcams.size()) == VIEW_TYPE_PROGRESS ? "VIEW_TYPE_PROGRESS" : "VIEW_TYPE_WEBCAM"));
+        this.loading = loading;
+        if (loading) {
+            notifyItemInserted(webcams.size());
+        } else {
+            notifyItemRemoved(webcams.size());
+        }
+    }
+
+    public boolean isLoading() {
+        return loading;
     }
 
     // DiffCallback
@@ -189,14 +227,18 @@ public class WebcamsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         @BindView(R.id.location_layout)
         View locationLayout;
 
-        @OnClick(R.id.location_layout)
-        public void showLocation() {
-        }
-
         public WebcamViewHolder(View itemView) {
             super(itemView);
 
             ButterKnife.bind(this, itemView);
         }
+    }
+
+    public interface OnWebcamClickListener {
+        void onWebcamClick(int position, Webcam webcam);
+    }
+
+    public interface OnLocationClickListener {
+        void onLocationClick(int position, Webcam webcam);
     }
 }
