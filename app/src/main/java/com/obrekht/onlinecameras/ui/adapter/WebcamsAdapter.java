@@ -4,7 +4,6 @@ import android.content.Context;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -145,16 +144,17 @@ public class WebcamsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     public void addWebcams(List<Webcam> webcams) {
         final int oldSize = this.webcams.size();
         this.webcams.addAll(webcams);
-        notifyItemRangeInserted(oldSize, webcams.size());
+
+        if (!loading) {
+            notifyItemChanged(webcams.size());
+        }
+        notifyItemRangeInserted(oldSize + 1, webcams.size());
     }
 
     public void setLoading(boolean loading) {
-        Log.d("WebcamsAdapter", "Loading: " + loading + ", " + (getItemViewType(webcams.size()) == VIEW_TYPE_PROGRESS ? "VIEW_TYPE_PROGRESS" : "VIEW_TYPE_WEBCAM"));
         this.loading = loading;
         if (loading) {
             notifyItemInserted(webcams.size());
-        } else {
-            notifyItemRemoved(webcams.size());
         }
     }
 

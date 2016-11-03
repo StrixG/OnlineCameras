@@ -1,5 +1,7 @@
 package com.obrekht.onlinecameras.ui.activity;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -63,6 +65,7 @@ public class WebcamsActivity extends MvpAppCompatActivity implements WebcamsView
 
     private WebcamsAdapter webcamsAdapter;
     private EndlessScrollListener webcamsScrollListener;
+    private GridAutofitLayoutManager layoutManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,7 +80,7 @@ public class WebcamsActivity extends MvpAppCompatActivity implements WebcamsView
 
         initFilterList();
         initSwipeRefreshLayout();
-        initLocationsList();
+        initWebcamsList();
     }
 
     @Override
@@ -110,6 +113,11 @@ public class WebcamsActivity extends MvpAppCompatActivity implements WebcamsView
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+    }
+
     private void initSwipeRefreshLayout() {
         swipeRefreshLayout.setOnRefreshListener(() -> {
             webcamsScrollListener.resetState();
@@ -117,11 +125,12 @@ public class WebcamsActivity extends MvpAppCompatActivity implements WebcamsView
         });
     }
 
-    private void initLocationsList() {
+    private void initWebcamsList() {
         webcamsList.setHasFixedSize(true);
 
-        GridAutofitLayoutManager layoutManager = new GridAutofitLayoutManager(this, getResources()
+        layoutManager = new GridAutofitLayoutManager(this, getResources()
                 .getDimensionPixelOffset(R.dimen.location_list_item_width));
+
         webcamsList.setLayoutManager(layoutManager);
 
         webcamsAdapter = new WebcamsAdapter();
@@ -146,8 +155,7 @@ public class WebcamsActivity extends MvpAppCompatActivity implements WebcamsView
     private void initFilterList() {
     }
 
-    @Override
-    public void toggleFilterDrawer() {
+    private void toggleFilterDrawer() {
         if (filterDrawer.isDrawerOpen(GravityCompat.END)) {
             filterDrawer.closeDrawer(GravityCompat.END);
         } else {
@@ -167,6 +175,7 @@ public class WebcamsActivity extends MvpAppCompatActivity implements WebcamsView
 
     @Override
     public void hideError() {
+        Log.d("WebcamsActivity", "hideError");
         webcamsList.setVisibility(View.VISIBLE);
         errorLayout.setVisibility(View.GONE);
         if (filterMenuItem != null) {
@@ -176,10 +185,12 @@ public class WebcamsActivity extends MvpAppCompatActivity implements WebcamsView
 
     @Override
     public void onStartLoading() {
+        Log.d("WebcamsActivity", "onStartLoading");
     }
 
     @Override
     public void onFinishLoading() {
+        Log.d("WebcamsActivity", "onFinishLoading");
         webcamsAdapter.setLoading(false);
         webcamsScrollListener.setLoading(false);
     }
@@ -204,24 +215,40 @@ public class WebcamsActivity extends MvpAppCompatActivity implements WebcamsView
     @Override
     public void hideProgress() {
         webcamsList.setVisibility(View.VISIBLE);
-        progressBar.setVisibility(View.GONE);
+        progressBar.animate()
+                .alpha(0f)
+                .setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        progressBar.setVisibility(View.GONE);
+                    }
+                });
     }
 
     @Override
     public void setWebcams(List<Webcam> webcams, boolean maybeMore) {
-        hideError();
+        Log.d("WebcamsActivity", "setWebcams " + webcams.size());
+        Log.d("WebcamsActivity", "isLoading " + webcamsAdapter.isLoading());
+        Log.d("WebcamsActivity", "isLoading " + webcamsScrollListener.isLoading());
         if (!maybeMore) {
             webcamsScrollListener.setLoadMoreAvailable(false);
         }
-        webcamsAdapter.setWebcams(webcams);
+        webcamsList.post(() -> webcamsAdapter.setWebcams(webcams));
     }
 
     @Override
     public void addWebcams(List<Webcam> webcams, boolean maybeMore) {
+        Log.d("WebcamsActivity", "addWebcams " + webcams.size());
+        Log.d("WebcamsActivity", "isLoading " + webcamsAdapter.isLoading());
+        Log.d("WebcamsActivity", "isLoading " + webcamsScrollListener.isLoading());
         if (!maybeMore) {
+            Log.d("WebcamsActivity", "NO MORE!");
             webcamsScrollListener.setLoadMoreAvailable(false);
         }
-        webcamsAdapter.addWebcams(webcams);
+        webcamsList.post(() -> {
+            webcamsAdapter.addWebcams(webcams);
+            Log.d("WebcamsActivity", "ITEM COUNT " + webcamsAdapter.getItemCount());
+        });
     }
 
     @Override

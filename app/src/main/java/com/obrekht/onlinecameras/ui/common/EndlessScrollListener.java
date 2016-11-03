@@ -12,8 +12,8 @@ public class EndlessScrollListener extends RecyclerView.OnScrollListener {
     private static final int DEFAULT_VISIBLE_THRESHOLD = 5;
 
     private int currentPage = STARTING_PAGE_INDEX;
-    private int previousTotalItemCount = 0;
-    private boolean loading = true;
+    //    private int previousTotalItemCount = 0;
+    private boolean loading;
     private boolean loadMoreAvailable = true;
 
     protected RecyclerView.LayoutManager layoutManager;
@@ -51,7 +51,7 @@ public class EndlessScrollListener extends RecyclerView.OnScrollListener {
     // but first we check if we are waiting for the previous load to finish.
     @Override
     public void onScrolled(RecyclerView view, int dx, int dy) {
-        if (!loadMoreAvailable) {
+        if (!loadMoreAvailable || loading) {
             return;
         }
 
@@ -87,7 +87,7 @@ public class EndlessScrollListener extends RecyclerView.OnScrollListener {
         // the visibleThreshold and need to reload more data.
         // If we do need to reload some more data, we execute onLoadMore to fetch the data.
         // threshold should reflect how many total columns there are too
-        if (!loading && (lastVisibleItemPosition + visibleThreshold) > totalItemCount) {
+        if ((lastVisibleItemPosition + visibleThreshold) > totalItemCount) {
             currentPage++;
             loading = true;
             if (listener != null) {
@@ -123,7 +123,7 @@ public class EndlessScrollListener extends RecyclerView.OnScrollListener {
     // Call this method whenever performing new searches
     public void resetState() {
         currentPage = STARTING_PAGE_INDEX;
-        previousTotalItemCount = 0;
+//        previousTotalItemCount = 0;
         loading = true;
         loadMoreAvailable = true;
     }

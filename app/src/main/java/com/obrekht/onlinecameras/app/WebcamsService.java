@@ -12,7 +12,7 @@ package com.obrekht.onlinecameras.app;
 
 import com.obrekht.onlinecameras.model.WebcamsResponse;
 
-import rx.Observable;
+import rx.Single;
 
 public class WebcamsService {
 
@@ -22,8 +22,8 @@ public class WebcamsService {
         this.webcamsApi = webcamsApi;
     }
 
-    public Observable<WebcamsResponse.Result> getNearbyWebcams(double latitude, double longitude,
-                                                               double radius, int page) {
+    public Single<WebcamsResponse.Result> getNearbyWebcams(double latitude, double longitude,
+                                                           double radius, int page) {
         return webcamsApi.getNearbyWebcams(latitude, longitude, radius,
                 WebcamsApi.DEFAULT_LIMIT, WebcamsApi.DEFAULT_LIMIT * (page - 1))
                 .map(WebcamsResponse::getResult);

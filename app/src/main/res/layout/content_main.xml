@@ -23,7 +23,6 @@
                 android:clipToPadding="false"
                 android:padding="@dimen/locations_list_padding"
                 android:scrollbarStyle="outsideOverlay"
-                app:layout_behavior="@string/appbar_scrolling_view_behavior"
                 tools:context="com.obrekht.onlinecameras.ui.activity.WebcamsActivity"
                 tools:listitem="@layout/item_webcam"/>
 

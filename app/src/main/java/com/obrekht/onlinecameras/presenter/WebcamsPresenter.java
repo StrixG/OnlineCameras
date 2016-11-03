@@ -19,7 +19,7 @@ import java.util.Locale;
 
 import javax.inject.Inject;
 
-import rx.Observable;
+import rx.Single;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
@@ -63,12 +63,11 @@ public class WebcamsPresenter extends MvpPresenter<WebcamsView> {
         }
         isInLoading = true;
 
-        getViewState().hideError();
         getViewState().onStartLoading();
 
         showProgress(isPageLoading, isRefreshing);
 
-        final Observable<WebcamsResponse.Result> observable = webcamsService.getNearbyWebcams(
+        final Single<WebcamsResponse.Result> observable = webcamsService.getNearbyWebcams(
                 54.7229841, 20.526418, WebcamsApi.DEFAULT_RADIUS, page);
 
         observable
@@ -98,6 +97,8 @@ public class WebcamsPresenter extends MvpPresenter<WebcamsView> {
     }
 
     private void onLoadingSuccess(boolean isPageLoading, List<Webcam> webcams, int offset, int total) {
+        getViewState().hideError();
+
         boolean maybeMore = offset + webcams.size() < total;
         if (isPageLoading && webcams.size() > 0) {
             Log.d("WebcamsPresenter", "addWebcams");
