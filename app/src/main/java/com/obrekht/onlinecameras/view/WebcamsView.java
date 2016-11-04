@@ -1,5 +1,7 @@
 package com.obrekht.onlinecameras.view;
 
+import android.support.annotation.StringRes;
+
 import com.arellomobile.mvp.MvpView;
 import com.arellomobile.mvp.viewstate.strategy.AddToEndSingleStrategy;
 import com.arellomobile.mvp.viewstate.strategy.AddToEndStrategy;
@@ -22,7 +24,7 @@ public interface WebcamsView extends MvpView {
     @StateStrategyType(SkipStrategy.class)
     void showWebcam(Webcam webcam);
 
-    void showError();
+    void showError(@StringRes int resId);
 
     void hideError();
 
@@ -48,4 +50,7 @@ public interface WebcamsView extends MvpView {
 
     @StateStrategyType(AddToEndStrategy.class)
     void addWebcams(List<Webcam> webcams, boolean maybeMore);
+
+    @StateStrategyType(SkipStrategy.class)
+    void requestLocationPermission();
 }

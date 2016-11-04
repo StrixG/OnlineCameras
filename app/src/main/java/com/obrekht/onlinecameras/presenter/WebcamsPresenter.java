@@ -1,5 +1,6 @@
 package com.obrekht.onlinecameras.presenter;
 
+import android.content.Context;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -8,15 +9,16 @@ import com.arellomobile.mvp.InjectViewState;
 import com.arellomobile.mvp.MvpPresenter;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
+import com.obrekht.onlinecameras.R;
 import com.obrekht.onlinecameras.app.WebcamsApi;
 import com.obrekht.onlinecameras.app.WebcamsApp;
 import com.obrekht.onlinecameras.app.WebcamsService;
+import com.obrekht.onlinecameras.di.ApplicationContext;
 import com.obrekht.onlinecameras.model.Webcam;
 import com.obrekht.onlinecameras.model.WebcamCategory;
 import com.obrekht.onlinecameras.model.WebcamLocation;
 import com.obrekht.onlinecameras.model.WebcamsResponse;
 import com.obrekht.onlinecameras.view.WebcamsView;
-import com.tbruyelle.rxpermissions.RxPermissions;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,15 +37,17 @@ public class WebcamsPresenter extends MvpPresenter<WebcamsView> {
     WebcamsService webcamsService;
 
     @Inject
-    RxPermissions rxPermissions;
-
-    @Inject
     @Named("location")
     GoogleApiClient locationApi;
+
+    @Inject
+    @ApplicationContext
+    Context context;
 
     private Location lastLocation;
     private boolean isInLoading;
     private WebcamCategory currentCategory;
+    private boolean isRefreshing;
 
     public WebcamsPresenter() {
         WebcamsApp.getComponent().inject(this);
@@ -80,11 +84,16 @@ public class WebcamsPresenter extends MvpPresenter<WebcamsView> {
     }
 
     public void loadWebcams(boolean isRefreshing) {
+        this.isRefreshing = isRefreshing;
+        getViewState().requestLocationPermission();
+    }
+
+    public void locationPermissionGranted() {
         lastLocation = LocationServices.FusedLocationApi.getLastLocation(locationApi);
         if (lastLocation != null) {
             loadData(1, false, isRefreshing);
         } else {
-            getViewState().showError();
+            getViewState().showError(R.string.cant_retrieve_location);
         }
     }
 
@@ -162,13 +171,13 @@ public class WebcamsPresenter extends MvpPresenter<WebcamsView> {
 
             // TODO
             List<WebcamCategory> webcamCategories = new ArrayList<>();
-            webcamCategories.add(new WebcamCategory("traffic", "Трафик", 3));
+//            webcamCategories.add(new WebcamCategory("traffic", "Трафик", 3));
             getViewState().setCategories(webcamCategories);
         }
     }
 
     private void onLoadingFailed() {
-        getViewState().showError();
+        getViewState().showError(R.string.loading_failed);
     }
 
     private void showProgress(boolean isPageLoading, boolean isRefreshing) {
@@ -189,6 +198,7 @@ public class WebcamsPresenter extends MvpPresenter<WebcamsView> {
         }
 
         if (isRefreshing) {
+            this.isRefreshing = isRefreshing;
             getViewState().hideRefreshing();
         } else {
             getViewState().hideProgress();
@@ -209,5 +219,5 @@ public class WebcamsPresenter extends MvpPresenter<WebcamsView> {
             };
 
     private GoogleApiClient.OnConnectionFailedListener googleApiConnectionFailedListener =
-            connectionResult -> getViewState().showError();
+            connectionResult -> getViewState().showError(R.string.connection_to_google_api_failed);
 }

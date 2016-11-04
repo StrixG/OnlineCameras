@@ -1,21 +1,26 @@
 package com.obrekht.onlinecameras.ui.activity;
 
+import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.arellomobile.mvp.MvpAppCompatActivity;
 import com.arellomobile.mvp.presenter.InjectPresenter;
@@ -39,6 +44,9 @@ import butterknife.ButterKnife;
 public class WebcamsActivity extends MvpAppCompatActivity implements WebcamsView {
 
     private static final String KEY_LAYOUT_MANAGER_STATE = "layout_manager_state";
+    public static final int REQUEST_CODE_LOCATION_PERMISSION = 1;
+    private Toast errorToast;
+
     @InjectPresenter
     WebcamsPresenter webcamsPresenter;
 
@@ -87,6 +95,8 @@ public class WebcamsActivity extends MvpAppCompatActivity implements WebcamsView
             webcamsPresenter.setCategory((WebcamCategory) filterAdapter.getItem(position));
         });
 
+        filterDrawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+
         initSwipeRefreshLayout();
         initWebcamsList(savedInstanceState);
     }
@@ -104,6 +114,11 @@ public class WebcamsActivity extends MvpAppCompatActivity implements WebcamsView
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
         filterMenuItem = menu.findItem(R.id.menu_item_filter);
+        if (errorLayout.getVisibility() == View.VISIBLE) {
+            filterMenuItem.setVisible(false);
+        } else {
+            filterMenuItem.setVisible(true);
+        }
         return true;
     }
 
@@ -125,6 +140,20 @@ public class WebcamsActivity extends MvpAppCompatActivity implements WebcamsView
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelable(KEY_LAYOUT_MANAGER_STATE, layoutManager.onSaveInstanceState());
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_CODE_LOCATION_PERMISSION: {
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    webcamsPresenter.locationPermissionGranted();
+                } else {
+                    showError(R.string.should_have_permission);
+                }
+            }
+        }
     }
 
     private void initSwipeRefreshLayout() {
@@ -187,7 +216,16 @@ public class WebcamsActivity extends MvpAppCompatActivity implements WebcamsView
     }
 
     @Override
-    public void showError() {
+    public void showError(int resId) {
+        if (errorToast != null) {
+            errorToast.cancel();
+        }
+        errorToast = Toast.makeText(this, resId, Toast.LENGTH_LONG);
+        errorToast.show();
+
+        hideRefreshing();
+
+        filterDrawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
         webcamsList.setVisibility(View.GONE);
         errorLayout.setVisibility(View.VISIBLE);
         if (filterMenuItem != null) {
@@ -197,8 +235,10 @@ public class WebcamsActivity extends MvpAppCompatActivity implements WebcamsView
 
     @Override
     public void hideError() {
+        filterDrawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
         webcamsList.setVisibility(View.VISIBLE);
         errorLayout.setVisibility(View.GONE);
+
         if (filterMenuItem != null) { // TODO: 04.11.2016
             filterMenuItem.setVisible(true);
         }
@@ -260,6 +300,26 @@ public class WebcamsActivity extends MvpAppCompatActivity implements WebcamsView
         webcamsList.post(() -> {
             webcamsAdapter.addWebcams(webcams);
         });
+    }
+
+    @Override
+    public void requestLocationPermission() {
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.ACCESS_FINE_LOCATION)) {
+
+                showError(R.string.should_have_permission);
+            } else {
+
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                        REQUEST_CODE_LOCATION_PERMISSION);
+            }
+        } else {
+            webcamsPresenter.locationPermissionGranted();
+        }
     }
 
     @Override

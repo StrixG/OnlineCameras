@@ -13,4 +13,8 @@
     <string name="webcam_not_available">Webcam is not available\n¯\\_(ツ)_/¯</string>
     <string name="title_category">Category</string>
     <string name="category_all">All</string>
+    <string name="should_have_permission">You should have location permission</string>
+    <string name="cant_retrieve_location">Can\'t retrieve location</string>
+    <string name="loading_failed">Loading failed</string>
+    <string name="connection_to_google_api_failed">Connection to Google Api failed</string>
 </resources>

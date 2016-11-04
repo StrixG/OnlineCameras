@@ -64,7 +64,6 @@ dependencies {
     // RxJava
     compile "io.reactivex:rxandroid:$rxAndroidVersion"
     compile "io.reactivex:rxjava:$rxJavaVersion"
-    compile 'com.tbruyelle.rxpermissions:rxpermissions:0.8.0@aar'
     // Retrofit
     compile "com.squareup.retrofit2:retrofit:$retrofitVersion"
     compile "com.squareup.retrofit2:converter-gson:$retrofitVersion"
@@ -72,11 +71,12 @@ dependencies {
     // Moxy
     compile "com.arello-mobile:moxy:$moxyVersion"
     compile "com.arello-mobile:moxy-android:$moxyVersion"
-    apt "com.arello-mobile:moxy-compiler:$moxyVersion"
     compile "com.arello-mobile:moxy-app-compat:$moxyVersion"
+    apt "com.arello-mobile:moxy-compiler:$moxyVersion"
     // Dagger
     compile "com.google.dagger:dagger:$daggerVersion"
     apt "com.google.dagger:dagger-compiler:$daggerVersion"
+
     compile "com.google.code.gson:gson:$gsonVersion"
     compile "com.squareup.picasso:picasso:$picassoVersion"
 

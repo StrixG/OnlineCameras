@@ -10,6 +10,7 @@
     <string name="error_description">К сожалению, произошла ошибка.\nПожалуйста, повторите попытку позже или обратитесь к нам по телефону.</string>
     <string name="title_webcam">Веб-камера</string>
     <string name="webcam_not_available">Веб-камера недоступна\n¯\\_(ツ)_/¯</string>
-	<string name="category_all">Все</string>
-	<string name="title_category">Категория</string>
+    <string name="category_all">Все</string>
+    <string name="title_category">Категория</string>
+    <string name="should_have_permission">Приложению требуется доступ к вашему местоположению</string>
 </resources>
