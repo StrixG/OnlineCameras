@@ -5,7 +5,6 @@ import android.animation.AnimatorListenerAdapter;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -161,16 +160,14 @@ public class WebcamsActivity extends MvpAppCompatActivity implements WebcamsView
 
         webcamsList.addOnScrollListener(webcamsScrollListener);
 
-        if (savedInstanceState != null) {
-            Log.d("WebcamsActivity", "RESTORED");
-            Parcelable savedState = savedInstanceState.getParcelable(KEY_LAYOUT_MANAGER_STATE);
-            layoutManager.onRestoreInstanceState(savedState);
-        }
+//        if (savedInstanceState != null) { // not working
+//            Parcelable savedState = savedInstanceState.getParcelable(KEY_LAYOUT_MANAGER_STATE);
+//            layoutManager.onRestoreInstanceState(savedState);
+//        }
     }
 
     @Override
     public void setCategories(List<WebcamCategory> categories) {
-        Log.d("WebcamsActivity", "setCa");
         filterAdapter = new CategoryFilterAdapter(this, categories);
         filterList.setAdapter(filterAdapter);
     }
@@ -186,13 +183,11 @@ public class WebcamsActivity extends MvpAppCompatActivity implements WebcamsView
 
     @Override
     public void refresh() {
-        Log.d("WebcamsActivity", "refresh");
         webcamsScrollListener.resetState();
     }
 
     @Override
     public void showError() {
-        Log.d("WebcamsActivity", "showError");
         webcamsList.setVisibility(View.GONE);
         errorLayout.setVisibility(View.VISIBLE);
         if (filterMenuItem != null) {
@@ -202,25 +197,19 @@ public class WebcamsActivity extends MvpAppCompatActivity implements WebcamsView
 
     @Override
     public void hideError() {
-        Log.d("WebcamsActivity", "hideError");
         webcamsList.setVisibility(View.VISIBLE);
         errorLayout.setVisibility(View.GONE);
-        if (filterMenuItem != null) {
+        if (filterMenuItem != null) { // TODO: 04.11.2016
             filterMenuItem.setVisible(true);
-            Log.d("WebcamsActivity", "filterMenuItem NOT  null");
-        } else {
-            Log.d("WebcamsActivity", "filterMenuItem null");
         }
     }
 
     @Override
     public void onStartLoading() {
-        Log.d("WebcamsActivity", "onStartLoading");
     }
 
     @Override
     public void onFinishLoading() {
-        Log.d("WebcamsActivity", "onFinishLoading");
         webcamsAdapter.setLoading(false);
         webcamsScrollListener.setLoading(false);
     }
@@ -257,7 +246,6 @@ public class WebcamsActivity extends MvpAppCompatActivity implements WebcamsView
 
     @Override
     public void setWebcams(List<Webcam> webcams, boolean maybeMore) {
-        Log.d("WebcamsActivity", "setWebcams " + webcams.size());
         if (!maybeMore) {
             webcamsScrollListener.setLoadMoreAvailable(false);
         }
@@ -266,14 +254,11 @@ public class WebcamsActivity extends MvpAppCompatActivity implements WebcamsView
 
     @Override
     public void addWebcams(List<Webcam> webcams, boolean maybeMore) {
-        Log.d("WebcamsActivity", "addWebcams " + webcams.size());
         if (!maybeMore) {
-            Log.d("WebcamsActivity", "NO MORE!");
             webcamsScrollListener.setLoadMoreAvailable(false);
         }
         webcamsList.post(() -> {
             webcamsAdapter.addWebcams(webcams);
-            Log.d("WebcamsActivity", "ITEM COUNT " + webcamsAdapter.getItemCount());
         });
     }
 

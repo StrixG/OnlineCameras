@@ -48,10 +48,6 @@ public class WebcamsService {
 //                .map(webcamsResponse -> {
 //
 //                    WebcamsResponse.Result result = webcamsResponse.getResult();
-//                    Log.d("WebcamsService", "STATUS: " + webcamsResponse.getStatus());
-//                    Log.d("WebcamsService", "Limit: " + result.limit + ", offset: " + result.offset);
-//                    Log.d("WebcamsService", "TOTAL: " + result.total);
-//                    Log.d("WebcamsService", "WEBCAMS: " + result.webcams.size());
 //
 //                    final LinkedHashSet<Place> placesSet = new LinkedHashSet<>();
 //                    final List<Webcam> webcams = webcamsResponse.getResult().webcams;
@@ -64,12 +60,8 @@ public class WebcamsService {
 //                        double webcamLatitude = webcamLocation.getLatitude();
 //                        double webcamLongitude = webcamLocation.getLongitude();
 //
-//                        Log.d("WebcamsService", "Place city: " + city);
-//                        Log.d("WebcamsService", "Place region: " + region);
-//
 //                        boolean notAlready = placesSet.add(new Place(city, region, webcamLatitude, webcamLongitude,
 //                                webcam.getWebcamImage().getCurrent().imageUrl));
-//                        Log.d("WebcamsService", String.valueOf(notAlready));
 //                    }
 //
 //                    return new ArrayList<>(placesSet);

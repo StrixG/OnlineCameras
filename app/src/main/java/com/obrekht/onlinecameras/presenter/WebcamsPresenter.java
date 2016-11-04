@@ -3,7 +3,6 @@ package com.obrekht.onlinecameras.presenter;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 import com.arellomobile.mvp.InjectViewState;
 import com.arellomobile.mvp.MvpPresenter;
@@ -21,7 +20,6 @@ import com.tbruyelle.rxpermissions.RxPermissions;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -121,11 +119,6 @@ public class WebcamsPresenter extends MvpPresenter<WebcamsView> {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(result -> {
-                    Log.d("WebcamsPresenter", String.format(Locale.getDefault(),
-                            "limit: %d; offset: %d; total: %d; webcams: %d",
-                            result.limit, result.offset, result.total,
-                            result.webcams.size()));
-
                     onLoadingFinish(isPageLoading, isRefreshing);
                     onLoadingSuccess(isPageLoading, result.webcams, result.offset, result.total);
                 }, error -> {
@@ -141,11 +134,6 @@ public class WebcamsPresenter extends MvpPresenter<WebcamsView> {
 //                .subscribeOn(Schedulers.io())
 //                .observeOn(AndroidSchedulers.mainThread())
 //                .subscribe(result -> {
-//                    Log.d("WebcamsPresenter", String.format(Locale.getDefault(),
-//                            "limit: %d; offset: %d; total: %d; webcams: %d",
-//                            result.limit, result.offset, result.total,
-//                            result.webcams.size()));
-//
 //                    onCategoriesLoadingFinish(isPageLoading, isRefreshing);
 //                    onCategoriesLoadingSuccess(isPageLoading, result.webcams, result.offset, result.total);
 //                }, error -> {
@@ -168,10 +156,8 @@ public class WebcamsPresenter extends MvpPresenter<WebcamsView> {
 
         boolean maybeMore = offset + webcams.size() < total;
         if (isPageLoading && webcams.size() > 0) {
-            Log.d("WebcamsPresenter", "addWebcams");
             getViewState().addWebcams(webcams, maybeMore);
         } else {
-            Log.d("WebcamsPresenter", "setWebcams");
             getViewState().setWebcams(webcams, maybeMore);
 
             // TODO
@@ -223,8 +209,5 @@ public class WebcamsPresenter extends MvpPresenter<WebcamsView> {
             };
 
     private GoogleApiClient.OnConnectionFailedListener googleApiConnectionFailedListener =
-            connectionResult -> {
-                Log.d("WebcamsPresenter", "OnConnectionFailedListener");
-                getViewState().showError();
-            };
+            connectionResult -> getViewState().showError();
 }
