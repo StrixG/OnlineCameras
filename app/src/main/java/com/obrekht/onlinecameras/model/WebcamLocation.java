@@ -1,7 +1,9 @@
 
 package com.obrekht.onlinecameras.model;
 
-public class WebcamLocation {
+import java.io.Serializable;
+
+public class WebcamLocation implements Serializable {
 
     private String city;
     private String region;

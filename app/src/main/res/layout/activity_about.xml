@@ -27,12 +27,20 @@
         android:text="@string/about_text"
         android:textAppearance="@style/Base.TextAppearance.AppCompat.Subhead"/>
 
+    <View
+        android:layout_below="@+id/about_text"
+        android:id="@+id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="16dp"
+        android:background="@color/divider_color"/>
+
     <LinearLayout
         android:id="@+id/about_email_layout"
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/about_text"
+        android:layout_below="@id/divider"
         android:layout_marginTop="16dp">
 
         <ImageView

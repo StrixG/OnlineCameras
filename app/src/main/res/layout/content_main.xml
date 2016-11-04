@@ -19,17 +19,18 @@
                 android:id="@+id/webcams_list"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:scrollbars="vertical"
                 android:clipToPadding="false"
                 android:padding="@dimen/locations_list_padding"
                 android:scrollbarStyle="outsideOverlay"
+                android:scrollbars="vertical"
                 tools:context="com.obrekht.onlinecameras.ui.activity.WebcamsActivity"
                 tools:listitem="@layout/item_webcam"/>
 
             <RelativeLayout
                 android:id="@+id/error_layout"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:visibility="gone">
 
                 <ImageView
                     android:layout_width="match_parent"

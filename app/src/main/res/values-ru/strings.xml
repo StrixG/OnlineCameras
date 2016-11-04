@@ -8,4 +8,6 @@
     <string name="action_settings">Настройки</string>
     <string name="error">Ошибка</string>
     <string name="error_description">К сожалению, произошла ошибка.\nПожалуйста, повторите попытку позже или обратитесь к нам по телефону.</string>
+    <string name="title_webcam">Веб-камера</string>
+    <string name="webcam_not_available">Веб-камера недоступна\n¯\\_(ツ)_/¯</string>
 </resources>

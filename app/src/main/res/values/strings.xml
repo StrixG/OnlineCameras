@@ -9,4 +9,8 @@
     <string name="error">Error</string>
     <string name="error_description">Unfortunately, an error occurred.\nPlease, try again later or contact us by phone.</string>
     <string name="phone_number" translatable="false">+7 (123) 456-78-90</string>
+    <string name="title_webcam">Webcam</string>
+    <string name="webcam_not_available">Webcam is not available\n¯\\_(ツ)_/¯</string>
+    <string name="title_category">Category</string>
+    <string name="category_all">All</string>
 </resources>

@@ -1,10 +1,18 @@
 package com.obrekht.onlinecameras.model;
 
-public class WebcamCategory {
+import java.io.Serializable;
+
+public class WebcamCategory implements Serializable {
 
     private String id;
     private String name;
     private Integer count;
+
+    public WebcamCategory(String id, String name, Integer count) {
+        this.id = id;
+        this.name = name;
+        this.count = count;
+    }
 
     public String getId() {
         return id;

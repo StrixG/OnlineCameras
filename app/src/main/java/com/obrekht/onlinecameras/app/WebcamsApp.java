@@ -10,15 +10,15 @@
 
 package com.obrekht.onlinecameras.app;
 
-import android.app.Application;
 import android.content.Context;
 
+import com.arellomobile.mvp.MvpApplication;
 import com.obrekht.onlinecameras.di.AppComponent;
 import com.obrekht.onlinecameras.di.DaggerAppComponent;
 import com.obrekht.onlinecameras.di.module.ContextModule;
 import com.obrekht.onlinecameras.di.module.RetrofitModule;
 
-public class WebcamsApp extends Application {
+public class WebcamsApp extends MvpApplication {
 
     private static AppComponent appComponent;
 

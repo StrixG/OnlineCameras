@@ -1,7 +1,9 @@
 
 package com.obrekht.onlinecameras.model;
 
-public class TimelapseList {
+import java.io.Serializable;
+
+public class TimelapseList implements Serializable {
 
     private Timelapse day;
     private Timelapse month;
@@ -24,23 +26,11 @@ public class TimelapseList {
         return lifetime;
     }
 
-    public class Timelapse {
+    public class Timelapse implements Serializable {
 
-        private Boolean available;
-        private String link;
-        private String embed;
-
-        public Boolean isAvailable() {
-            return available;
-        }
-
-        public String getLink() {
-            return link;
-        }
-
-        public String getEmbed() {
-            return embed;
-        }
+        public Boolean available;
+        public String link;
+        public String embed;
     }
 
 

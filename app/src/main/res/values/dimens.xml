@@ -12,4 +12,5 @@
     <dimen name="locations_list_padding">8dp</dimen>
     <dimen name="location_list_item_width">224dp</dimen>
     <dimen name="location_list_item_padding">8dp</dimen>
+    <dimen name="filter_header_padding">16dp</dimen>
 </resources>

@@ -23,8 +23,20 @@ public class WebcamsService {
     }
 
     public Single<WebcamsResponse.Result> getNearbyWebcams(double latitude, double longitude,
-                                                           double radius, int page) {
+                                                           double radius, String categoryId, int page) {
+        if (categoryId != null) {
+            return webcamsApi.getNearbyWebcamsByCategory(latitude, longitude, radius, categoryId,
+                    WebcamsApi.DEFAULT_LIMIT, WebcamsApi.DEFAULT_LIMIT * (page - 1))
+                    .map(WebcamsResponse::getResult);
+        }
         return webcamsApi.getNearbyWebcams(latitude, longitude, radius,
+                WebcamsApi.DEFAULT_LIMIT, WebcamsApi.DEFAULT_LIMIT * (page - 1))
+                .map(WebcamsResponse::getResult);
+    }
+
+    public Single<WebcamsResponse.Result> getNearbyCategories(double latitude, double longitude,
+                                                              double radius, int page) {
+        return webcamsApi.getNearbyCategories(latitude, longitude, radius,
                 WebcamsApi.DEFAULT_LIMIT, WebcamsApi.DEFAULT_LIMIT * (page - 1))
                 .map(WebcamsResponse::getResult);
     }

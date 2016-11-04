@@ -1,24 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="@dimen/filter_drawer_width"
     android:layout_height="match_parent"
     android:layout_gravity="end"
+    xmlns:tools="http://schemas.android.com/tools"
     android:background="@color/colorPrimary">
 
-    <android.support.v7.widget.ListViewCompat
+    <TextView
+        android:id="@+id/header"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:gravity="center_vertical"
+        android:maxLines="1"
+        android:paddingEnd="@dimen/filter_header_padding"
+        android:paddingLeft="@dimen/filter_header_padding"
+        android:paddingRight="16dp"
+        android:paddingStart="@dimen/filter_header_padding"
+        android:text="@string/title_category"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+        android:textColor="@color/filter_header_color"/>
+
+    <View
+        android:layout_below="@+id/header"
+        android:id="@+id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/divider_color"/>
+
+    <ListView
+        android:divider="@android:color/transparent"
+        android:layout_below="@+id/divider"
         android:id="@+id/filter_list"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        tools:listitem="@layout/item_category"/>
 
     <ImageView
-        app:srcCompat="@drawable/ic_filter_bg"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
+        android:layout_alignParentBottom="true"
         android:adjustViewBounds="true"
         android:scaleType="centerCrop"
-        android:tint="@color/colorPrimaryDark"/>
+        android:tint="@color/colorPrimaryDark"
+        app:srcCompat="@drawable/ic_filter_bg"/>
 
-</FrameLayout>
+</RelativeLayout>

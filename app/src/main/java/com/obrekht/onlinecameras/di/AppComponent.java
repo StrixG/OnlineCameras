@@ -11,6 +11,7 @@
 package com.obrekht.onlinecameras.di;
 
 import com.obrekht.onlinecameras.di.module.ContextModule;
+import com.obrekht.onlinecameras.di.module.GoogleApiModule;
 import com.obrekht.onlinecameras.di.module.RxPermissionsModule;
 import com.obrekht.onlinecameras.di.module.WebcamsModule;
 import com.obrekht.onlinecameras.presenter.WebcamsPresenter;
@@ -20,7 +21,7 @@ import javax.inject.Singleton;
 import dagger.Component;
 
 @Singleton
-@Component(modules = {ContextModule.class, WebcamsModule.class, RxPermissionsModule.class})
+@Component(modules = {ContextModule.class, WebcamsModule.class, RxPermissionsModule.class, GoogleApiModule.class})
 public interface AppComponent {
 
     void inject(WebcamsPresenter webcamsPresenter);

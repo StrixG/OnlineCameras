@@ -3,7 +3,9 @@ package com.obrekht.onlinecameras.model;
 
 import com.google.gson.annotations.SerializedName;
 
-public class WebcamImage {
+import java.io.Serializable;
+
+public class WebcamImage implements Serializable {
 
     private Preview current;
     private Preview daylight;
@@ -26,15 +28,15 @@ public class WebcamImage {
         return update;
     }
 
-    public class Preview {
+    public class Preview implements Serializable {
         @SerializedName("preview")
         public java.lang.String imageUrl;
     }
 
-    public class Sizes {
+    public class Sizes implements Serializable {
         public PreviewSize preview;
 
-        public class PreviewSize {
+        public class PreviewSize implements Serializable {
             private Integer width;
             private Integer height;
         }
