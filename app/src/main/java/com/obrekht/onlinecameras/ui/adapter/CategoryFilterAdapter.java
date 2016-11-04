@@ -1,7 +1,6 @@
 package com.obrekht.onlinecameras.ui.adapter;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,8 +15,8 @@ import java.util.List;
 
 public class CategoryFilterAdapter extends BaseAdapter {
 
-    public static final int VIEW_TYPE_CATEGORY = 1;
-    public static final int VIEW_TYPE_CATEGORY_ALL = 2;
+    public static final int VIEW_TYPE_CATEGORY = 0;
+    public static final int VIEW_TYPE_CATEGORY_ALL = 1;
 
     private final Context context;
     private final LayoutInflater inflater;
@@ -32,17 +31,17 @@ public class CategoryFilterAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        return categories.size();
+        return categories.size() + 1;
     }
 
     @Override
     public Object getItem(int position) {
-        return categories.get(position);
+        return position == 0 ? null : categories.get(position - 1);
     }
 
     @Override
     public long getItemId(int position) {
-        return position;
+        return 0;
     }
 
     @Override
@@ -52,26 +51,25 @@ public class CategoryFilterAdapter extends BaseAdapter {
             view = inflater.inflate(R.layout.item_category, parent, false);
         }
 
-        Log.d("CategoryFilterAdapter", "getView");
-
         TextView categoryName = (TextView) view.findViewById(R.id.category_name);
         TextView categoryCount = (TextView) view.findViewById(R.id.category_count);
 
         if (getItemViewType(position) == VIEW_TYPE_CATEGORY_ALL) {
-            Log.d("CategoryFilterAdapter", "VIEW_TYPE_CATEGORY_ALL");
             categoryName.setText(R.string.category_all);
             categoryCount.setText("");
         } else {
             WebcamCategory category = (WebcamCategory) getItem(position);
 
             categoryName.setText(category.getName());
-            categoryCount.setText(category.getCount());
+            categoryCount.setText(String.valueOf(category.getCount()));
         }
 
         if (selectedCategory == position) {
-            categoryName.setTextColor(0xFFFFFFFF); // TODO
+            int color = context.getResources().getColor(R.color.selected_category);
+            categoryName.setTextColor(color);
         } else {
-            categoryName.setTextColor(0x8AFFFFFF); // TODO
+            int color = context.getResources().getColor(R.color.unselected_category);
+            categoryName.setTextColor(color);
         }
 
         return view;
