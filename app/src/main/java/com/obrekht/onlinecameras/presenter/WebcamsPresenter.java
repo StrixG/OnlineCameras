@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 
 import com.arellomobile.mvp.InjectViewState;
 import com.arellomobile.mvp.MvpPresenter;
+import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 import com.obrekht.onlinecameras.R;
@@ -222,7 +223,12 @@ public class WebcamsPresenter extends MvpPresenter<WebcamsView> {
             };
 
     private GoogleApiClient.OnConnectionFailedListener googleApiConnectionFailedListener =
-            connectionResult -> getViewState().showError(R.string.connection_to_google_api_failed);
+            connectionResult -> {
+                if (connectionResult.getErrorCode() == ConnectionResult.SERVICE_VERSION_UPDATE_REQUIRED) {
+                    getViewState().showUpdateServicesDialog();
+                }
+                getViewState().showError(R.string.connection_to_google_api_failed);
+            };
 
     public void locationPermissionDenied() {
         getViewState().showLocationPermissionError();

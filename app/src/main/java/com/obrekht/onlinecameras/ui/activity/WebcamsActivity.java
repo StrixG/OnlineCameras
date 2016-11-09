@@ -24,6 +24,8 @@ import android.widget.ProgressBar;
 
 import com.arellomobile.mvp.MvpAppCompatActivity;
 import com.arellomobile.mvp.presenter.InjectPresenter;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.obrekht.onlinecameras.R;
 import com.obrekht.onlinecameras.model.Webcam;
 import com.obrekht.onlinecameras.model.WebcamCategory;
@@ -46,7 +48,7 @@ public class WebcamsActivity extends MvpAppCompatActivity implements WebcamsView
 
     private static final String KEY_LAYOUT_MANAGER_STATE = "layout_manager_state";
     public static final int REQUEST_CODE_LOCATION_PERMISSION = 1;
-    private Snackbar snackbar;
+    private static final int REQUEST_CODE_UPDATE_SERVICES = 2;
 
     @InjectPresenter
     WebcamsPresenter webcamsPresenter;
@@ -223,8 +225,7 @@ public class WebcamsActivity extends MvpAppCompatActivity implements WebcamsView
 
     @Override
     public void showError(int resId) {
-        snackbar = Snackbar.make(errorLayout, resId, Snackbar.LENGTH_LONG);
-        snackbar.show();
+        Snackbar.make(errorLayout, resId, Snackbar.LENGTH_LONG).show();
 
         hideRefreshing();
 
@@ -238,9 +239,9 @@ public class WebcamsActivity extends MvpAppCompatActivity implements WebcamsView
 
     @Override
     public void showLocationPermissionError() {
-        snackbar = Snackbar.make(errorLayout, R.string.should_have_permission, Snackbar.LENGTH_LONG);
-        snackbar.setAction(R.string.grant, view -> requestLocationPermission());
-        snackbar.show();
+        Snackbar.make(errorLayout, R.string.should_have_permission, Snackbar.LENGTH_LONG)
+                .setAction(R.string.grant, view -> requestLocationPermission())
+                .show();
 
         hideRefreshing();
 
@@ -339,6 +340,15 @@ public class WebcamsActivity extends MvpAppCompatActivity implements WebcamsView
         } else {
             webcamsPresenter.locationPermissionGranted();
         }
+    }
+
+    @Override
+    public void showUpdateServicesDialog() {
+        GoogleApiAvailability availability = GoogleApiAvailability.getInstance();
+        availability
+                .getErrorDialog(this, ConnectionResult.SERVICE_VERSION_UPDATE_REQUIRED,
+                        REQUEST_CODE_UPDATE_SERVICES)
+                .show();
     }
 
     private void requestLocationPermission() {

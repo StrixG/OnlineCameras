@@ -55,4 +55,6 @@ public interface WebcamsView extends MvpView {
 
     @StateStrategyType(SkipStrategy.class)
     void checkLocationPermission();
+
+    void showUpdateServicesDialog();
 }
