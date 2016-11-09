@@ -26,6 +26,8 @@ public interface WebcamsView extends MvpView {
 
     void showError(@StringRes int resId);
 
+    void showLocationPermissionError();
+
     void hideError();
 
     void onStartLoading();
@@ -46,11 +48,11 @@ public interface WebcamsView extends MvpView {
 
     void setWebcams(List<Webcam> webcams, boolean maybeMore);
 
-    void setCategories(List<WebcamCategory> categories);
+    void setCategories(List<WebcamCategory> categories, String currentCategory);
 
     @StateStrategyType(AddToEndStrategy.class)
     void addWebcams(List<Webcam> webcams, boolean maybeMore);
 
     @StateStrategyType(SkipStrategy.class)
-    void requestLocationPermission();
+    void checkLocationPermission();
 }

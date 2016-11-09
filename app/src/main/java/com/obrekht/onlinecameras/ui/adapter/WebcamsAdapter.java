@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.arellomobile.mvp.MvpDelegate;
 import com.obrekht.onlinecameras.R;
 import com.obrekht.onlinecameras.model.Webcam;
 import com.obrekht.onlinecameras.model.WebcamCategory;
@@ -23,7 +24,7 @@ import java.util.Locale;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class WebcamsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class WebcamsAdapter extends MvpRecyclerViewAdapter<RecyclerView.ViewHolder> {
 
     public static final int VIEW_TYPE_WEBCAM = 0;
     public static final int VIEW_TYPE_PROGRESS = 1;
@@ -34,7 +35,8 @@ public class WebcamsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private OnWebcamClickListener webcamClickListener;
     private OnLocationClickListener locationClickListener;
 
-    public WebcamsAdapter() {
+    public WebcamsAdapter(MvpDelegate<?> parentDelegate) {
+        super(parentDelegate, String.valueOf(0));
     }
 
     public Webcam getItem(int position) {

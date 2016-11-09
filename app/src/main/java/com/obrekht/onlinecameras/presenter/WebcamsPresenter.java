@@ -20,7 +20,6 @@ import com.obrekht.onlinecameras.model.WebcamLocation;
 import com.obrekht.onlinecameras.model.WebcamsResponse;
 import com.obrekht.onlinecameras.view.WebcamsView;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -46,7 +45,7 @@ public class WebcamsPresenter extends MvpPresenter<WebcamsView> {
 
     private Location lastLocation;
     private boolean isInLoading;
-    private WebcamCategory currentCategory;
+    private String currentCategoryId;
     private boolean isRefreshing;
 
     public WebcamsPresenter() {
@@ -85,20 +84,39 @@ public class WebcamsPresenter extends MvpPresenter<WebcamsView> {
 
     public void loadWebcams(boolean isRefreshing) {
         this.isRefreshing = isRefreshing;
-        getViewState().requestLocationPermission();
+        getViewState().checkLocationPermission();
     }
 
     public void locationPermissionGranted() {
         lastLocation = LocationServices.FusedLocationApi.getLastLocation(locationApi);
         if (lastLocation != null) {
             loadData(1, false, isRefreshing);
+            loadCategories();
         } else {
             getViewState().showError(R.string.cant_retrieve_location);
         }
     }
 
-    public void setCategory(WebcamCategory webcamCategory) {
-        this.currentCategory = webcamCategory;
+    public void setCategory(String webcamCategoryId) {
+        this.currentCategoryId = webcamCategoryId;
+    }
+
+    private void loadCategories() {
+        double latitude = lastLocation.getLatitude();
+        double longitude = lastLocation.getLongitude();
+
+        Single<WebcamsResponse.Result> categoriesObservable = webcamsService.getNearbyCategories(
+                latitude, longitude, WebcamsApi.DEFAULT_RADIUS, 1); // TODO: load all pages
+
+        categoriesObservable
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(result -> {
+                    onCategoriesLoadingSuccess(result.categories);
+                }, error -> {
+                    onLoadingFailed();
+                    error.printStackTrace();
+                });
     }
 
     private void loadData(int page, boolean isPageLoading,
@@ -116,10 +134,10 @@ public class WebcamsPresenter extends MvpPresenter<WebcamsView> {
         double longitude = lastLocation.getLongitude();
 
         String categoryId;
-        if (currentCategory == null) {
+        if (currentCategoryId == null) {
             categoryId = null;
         } else {
-            categoryId = currentCategory.getId();
+            categoryId = currentCategoryId;
         }
         Single<WebcamsResponse.Result> observable = webcamsService.getNearbyWebcams(
                 latitude, longitude, WebcamsApi.DEFAULT_RADIUS, categoryId, page);
@@ -135,21 +153,6 @@ public class WebcamsPresenter extends MvpPresenter<WebcamsView> {
                     onLoadingFailed();
                     error.printStackTrace();
                 });
-
-//        final Single<WebcamsResponse.Result> observable2 = webcamsService.getNearbyCategories(
-//                latitude, longitude, WebcamsApi.DEFAULT_RADIUS, page);
-
-//        observable2
-//                .subscribeOn(Schedulers.io())
-//                .observeOn(AndroidSchedulers.mainThread())
-//                .subscribe(result -> {
-//                    onCategoriesLoadingFinish(isPageLoading, isRefreshing);
-//                    onCategoriesLoadingSuccess(isPageLoading, result.webcams, result.offset, result.total);
-//                }, error -> {
-//                    onCategoriesLoadingFinish(isPageLoading, isRefreshing);
-//                    onCategoriesLoadingFailed();
-//                    error.printStackTrace();
-//                });
     }
 
     private void onLoadingFinish(boolean isPageLoading, boolean isRefreshing) {
@@ -168,12 +171,12 @@ public class WebcamsPresenter extends MvpPresenter<WebcamsView> {
             getViewState().addWebcams(webcams, maybeMore);
         } else {
             getViewState().setWebcams(webcams, maybeMore);
-
-            // TODO
-            List<WebcamCategory> webcamCategories = new ArrayList<>();
-//            webcamCategories.add(new WebcamCategory("traffic", "Трафик", 3));
-            getViewState().setCategories(webcamCategories);
         }
+    }
+
+    private void onCategoriesLoadingSuccess(List<WebcamCategory> categories) {
+        getViewState().hideError();
+        getViewState().setCategories(categories, currentCategoryId);
     }
 
     private void onLoadingFailed() {
@@ -220,4 +223,8 @@ public class WebcamsPresenter extends MvpPresenter<WebcamsView> {
 
     private GoogleApiClient.OnConnectionFailedListener googleApiConnectionFailedListener =
             connectionResult -> getViewState().showError(R.string.connection_to_google_api_failed);
+
+    public void locationPermissionDenied() {
+        getViewState().showLocationPermissionError();
+    }
 }

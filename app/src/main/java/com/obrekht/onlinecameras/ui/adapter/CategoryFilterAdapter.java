@@ -80,6 +80,17 @@ public class CategoryFilterAdapter extends BaseAdapter {
         notifyDataSetChanged();
     }
 
+    public void selectCategoryById(String webcamCategory) {
+        int position = 0;
+        for (int i = 0; i < categories.size(); i++) {
+            if (categories.get(i).getId().equals(webcamCategory)) {
+                position = i + 1;
+            }
+        }
+        this.selectedCategory = position;
+        notifyDataSetChanged();
+    }
+
     @Override
     public int getItemViewType(int position) {
         if (position == 0) {

@@ -25,4 +25,13 @@ public class WebcamCategory implements Serializable {
     public Integer getCount() {
         return count;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null || !(obj instanceof WebcamCategory)) {
+            return false;
+        }
+
+        return ((WebcamCategory) obj).id.equals(this.id);
+    }
 }
