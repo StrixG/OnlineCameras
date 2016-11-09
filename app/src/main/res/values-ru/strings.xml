@@ -14,7 +14,7 @@
     <string name="title_category">Категория</string>
     <string name="should_have_permission">Требуется доступ к вашему местоположению</string>
     <string name="cant_retrieve_location">Не удалось получить местоположение</string>
-    <string name="connection_to_google_api_failed">Ошибка подключения</string>
+    <string name="connection_to_google_api_failed">Ошибка подключения к Google API</string>
     <string name="grant">Предоставить</string>
     <string name="loading_failed">Не удалось загрузить</string>
 </resources>
