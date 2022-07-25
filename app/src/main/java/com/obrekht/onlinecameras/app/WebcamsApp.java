@@ -28,8 +28,8 @@ public class WebcamsApp extends MvpApplication {
 
         appComponent = DaggerAppComponent.builder()
                 .contextModule(new ContextModule(this))
-                .retrofitModule(new RetrofitModule("https://webcamstravel.p.mashape.com/webcams/",
-                        "qzg5ev8xnumshtEkxiDM8GffBmdnp1CwCGMjsnCPPkUVcQwajO"))
+                .retrofitModule(new RetrofitModule("https://api.windy.com/api/webcams/v2/",
+                        "uZxwZIdYVmxAF0pDjEIkcRfbX5qI3yTF"))
                 .build();
     }
 
