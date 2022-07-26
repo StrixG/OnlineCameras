@@ -1,16 +1,15 @@
 package com.obrekht.onlinecameras.ui.adapter;
 
 import android.content.Context;
-import android.support.v7.util.DiffUtil;
-import android.support.v7.widget.AppCompatImageView;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.DiffUtil;
+import androidx.appcompat.widget.AppCompatImageView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.arellomobile.mvp.MvpDelegate;
 import com.obrekht.onlinecameras.R;
 import com.obrekht.onlinecameras.model.Webcam;
 import com.obrekht.onlinecameras.model.WebcamCategory;
@@ -23,6 +22,7 @@ import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import moxy.MvpDelegate;
 
 public class WebcamsAdapter extends MvpRecyclerViewAdapter<RecyclerView.ViewHolder> {
 
@@ -84,7 +84,7 @@ public class WebcamsAdapter extends MvpRecyclerViewAdapter<RecyclerView.ViewHold
                 }
             });
 
-            Picasso.with(webcamHolder.webcamPicture.getContext())
+            Picasso.get()
                     .load(webcam.getImage().getCurrent().imageUrl)
                     .placeholder(R.color.grey_light)
                     .into(webcamHolder.webcamPicture);

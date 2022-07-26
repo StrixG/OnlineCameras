@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="EntryPointsManager">
-    <entry_points version="2.0" />
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/Dev/Android/Webcams/app/src/main/res/layout/content_main.xml" value="0.21354166666666666" />
+        <entry key="..\:/Dev/Android/Webcams/app/src/main/res/layout/item_webcam.xml" value="0.21354166666666666" />
+      </map>
+    </option>
   </component>
   <component name="ExternalStorageConfigurationManager" enabled="true" />
   <component name="NullableNotNullManager">
