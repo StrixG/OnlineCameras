@@ -1,15 +1,11 @@
 package com.obrekht.onlinecameras.presenter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.location.Location;
-import android.os.Bundle;
-import android.support.annotation.Nullable;
 
-import com.arellomobile.mvp.InjectViewState;
-import com.arellomobile.mvp.MvpPresenter;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.Priority;
 import com.obrekht.onlinecameras.R;
 import com.obrekht.onlinecameras.app.WebcamsApi;
 import com.obrekht.onlinecameras.app.WebcamsApp;
@@ -26,6 +22,8 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import moxy.InjectViewState;
+import moxy.MvpPresenter;
 import rx.Single;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -38,7 +36,7 @@ public class WebcamsPresenter extends MvpPresenter<WebcamsView> {
 
     @Inject
     @Named("location")
-    GoogleApiClient locationApi;
+    FusedLocationProviderClient locationApi;
 
     @Inject
     @ApplicationContext
@@ -51,18 +49,17 @@ public class WebcamsPresenter extends MvpPresenter<WebcamsView> {
 
     public WebcamsPresenter() {
         WebcamsApp.getComponent().inject(this);
+    }
 
-        locationApi.connect();
-        locationApi.registerConnectionFailedListener(googleApiConnectionFailedListener);
-        locationApi.registerConnectionCallbacks(googleApiConnectionCallbacks);
+    @Override
+    protected void onFirstViewAttach() {
+        super.onFirstViewAttach();
+
+        loadWebcams(false);
     }
 
     @Override
     public void onDestroy() {
-        locationApi.unregisterConnectionFailedListener(googleApiConnectionFailedListener);
-        locationApi.unregisterConnectionCallbacks(googleApiConnectionCallbacks);
-        locationApi.disconnect();
-
         super.onDestroy();
     }
 
@@ -88,14 +85,20 @@ public class WebcamsPresenter extends MvpPresenter<WebcamsView> {
         getViewState().checkLocationPermission();
     }
 
+    @SuppressLint("MissingPermission")
     public void locationPermissionGranted() {
-        lastLocation = LocationServices.FusedLocationApi.getLastLocation(locationApi);
-        if (lastLocation != null) {
-            loadData(1, false, isRefreshing);
-            loadCategories();
-        } else {
-            getViewState().showError(R.string.cant_retrieve_location);
-        }
+        locationApi.getCurrentLocation(Priority.PRIORITY_BALANCED_POWER_ACCURACY, null)
+                .addOnSuccessListener(location -> {
+                    if (location != null) {
+                        lastLocation = location;
+                        loadData(1, false, isRefreshing);
+                        loadCategories();
+                    } else {
+                        getViewState().showErrorWithMessage(R.string.cant_retrieve_location);
+                    }
+                }).addOnFailureListener(e -> {
+                    getViewState().showErrorWithMessage(R.string.connection_to_google_api_failed);
+                });
     }
 
     public void setCategory(String webcamCategoryId) {
@@ -181,7 +184,7 @@ public class WebcamsPresenter extends MvpPresenter<WebcamsView> {
     }
 
     private void onLoadingFailed() {
-        getViewState().showError(R.string.loading_failed);
+        getViewState().showErrorWithMessage(R.string.loading_failed);
     }
 
     private void showProgress(boolean isPageLoading, boolean isRefreshing) {
@@ -202,33 +205,12 @@ public class WebcamsPresenter extends MvpPresenter<WebcamsView> {
         }
 
         if (isRefreshing) {
-            this.isRefreshing = isRefreshing;
+            this.isRefreshing = true;
             getViewState().hideRefreshing();
         } else {
             getViewState().hideProgress();
         }
     }
-
-    private GoogleApiClient.ConnectionCallbacks googleApiConnectionCallbacks =
-            new GoogleApiClient.ConnectionCallbacks() {
-                @Override
-                public void onConnected(@Nullable Bundle bundle) {
-                    loadWebcams(false);
-                }
-
-                @Override
-                public void onConnectionSuspended(int i) {
-
-                }
-            };
-
-    private GoogleApiClient.OnConnectionFailedListener googleApiConnectionFailedListener =
-            connectionResult -> {
-                if (connectionResult.getErrorCode() == ConnectionResult.SERVICE_VERSION_UPDATE_REQUIRED) {
-                    getViewState().showUpdateServicesDialog();
-                }
-                getViewState().showError(R.string.connection_to_google_api_failed);
-            };
 
     public void locationPermissionDenied() {
         getViewState().showLocationPermissionError();

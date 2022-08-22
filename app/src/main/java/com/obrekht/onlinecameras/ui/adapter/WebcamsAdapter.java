@@ -1,17 +1,16 @@
 package com.obrekht.onlinecameras.ui.adapter;
 
 import android.content.Context;
-import android.support.v7.util.DiffUtil;
-import android.support.v7.widget.AppCompatImageView;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
-import android.widget.TextView;
 
-import com.arellomobile.mvp.MvpDelegate;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.DiffUtil;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.obrekht.onlinecameras.R;
+import com.obrekht.onlinecameras.databinding.ItemProgressBinding;
+import com.obrekht.onlinecameras.databinding.ItemWebcamBinding;
 import com.obrekht.onlinecameras.model.Webcam;
 import com.obrekht.onlinecameras.model.WebcamCategory;
 import com.obrekht.onlinecameras.model.WebcamLocation;
@@ -21,8 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
+import moxy.MvpDelegate;
 
 public class WebcamsAdapter extends MvpRecyclerViewAdapter<RecyclerView.ViewHolder> {
 
@@ -43,6 +41,7 @@ public class WebcamsAdapter extends MvpRecyclerViewAdapter<RecyclerView.ViewHold
         return webcams.get(position);
     }
 
+    @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         final Context context = parent.getContext();
@@ -52,45 +51,46 @@ public class WebcamsAdapter extends MvpRecyclerViewAdapter<RecyclerView.ViewHold
 
         if (loading && viewType == VIEW_TYPE_PROGRESS) {
             holder = new ProgressViewHolder(
-                    inflater.inflate(R.layout.item_progress, parent, false));
+                    ItemProgressBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false));
         } else {
             holder = new WebcamViewHolder(
-                    inflater.inflate(R.layout.item_webcam, parent, false));
+                    ItemWebcamBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false));
         }
 
         return holder;
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, final int position) {
         if (holder instanceof WebcamViewHolder) {
             WebcamViewHolder webcamHolder = (WebcamViewHolder) holder;
             Webcam webcam = getItem(position);
 
-            webcamHolder.text1.setText(getCategoriesString(webcam.getCategories()));
-            webcamHolder.text2.setText(webcam.getTitle());
-            webcamHolder.text2.setSelected(true);
-            webcamHolder.location.setText(getLocationString(webcam.getLocation()));
+            ItemWebcamBinding webcamBinding = webcamHolder.binding;
+            webcamBinding.category.setText(getCategoriesString(webcam.getCategories()));
+            webcamBinding.name.setText(webcam.getTitle());
+            webcamBinding.name.setSelected(true);
+            webcamBinding.locationText.setText(getLocationString(webcam.getLocation()));
 
-            webcamHolder.itemView.setOnClickListener(view -> {
+            webcamBinding.getRoot().setOnClickListener(view -> {
                 if (webcamClickListener != null) {
                     webcamClickListener.onWebcamClick(position, webcam);
                 }
             });
 
-            webcamHolder.locationLayout.setOnClickListener(view -> {
+            webcamBinding.locationLayout.setOnClickListener(view -> {
                 if (locationClickListener != null) {
                     locationClickListener.onLocationClick(position, webcam);
                 }
             });
 
-            Picasso.with(webcamHolder.webcamPicture.getContext())
+            Picasso.get()
                     .load(webcam.getImage().getCurrent().imageUrl)
                     .placeholder(R.color.grey_light)
-                    .into(webcamHolder.webcamPicture);
+                    .into(webcamBinding.webcamPicture);
 
         } else {
-            ((ProgressViewHolder) holder).progressBar.setIndeterminate(true);
+            ((ProgressViewHolder) holder).binding.progressBar.setIndeterminate(true);
         }
     }
 
@@ -117,16 +117,16 @@ public class WebcamsAdapter extends MvpRecyclerViewAdapter<RecyclerView.ViewHold
     }
 
     private static String getCategoriesString(List<WebcamCategory> categories) {
-        String categoriesStr = "";
+        StringBuilder categoriesStr = new StringBuilder();
 
         for (int i = 0; i < categories.size(); i++) {
-            categoriesStr += categories.get(i).getName();
+            categoriesStr.append(categories.get(i).getName());
             if (i != (categories.size() - 1)) {
-                categoriesStr += ", ";
+                categoriesStr.append(", ");
             }
         }
 
-        return categoriesStr;
+        return categoriesStr.toString();
     }
 
     private static String getLocationString(WebcamLocation location) {
@@ -205,34 +205,20 @@ public class WebcamsAdapter extends MvpRecyclerViewAdapter<RecyclerView.ViewHold
 
     // ViewHolders
     public static class ProgressViewHolder extends RecyclerView.ViewHolder {
+        ItemProgressBinding binding;
 
-        @BindView(R.id.progress_bar)
-        ProgressBar progressBar;
-
-        public ProgressViewHolder(View itemView) {
-            super(itemView);
-
-            ButterKnife.bind(this, itemView);
+        public ProgressViewHolder(ItemProgressBinding binding) {
+            super(binding.getRoot());
+            this.binding = binding;
         }
     }
 
     public static class WebcamViewHolder extends RecyclerView.ViewHolder {
+        ItemWebcamBinding binding;
 
-        @BindView(R.id.text1)
-        TextView text1;
-        @BindView(R.id.text2)
-        TextView text2;
-        @BindView(R.id.webcam_picture)
-        AppCompatImageView webcamPicture;
-        @BindView(R.id.location_text)
-        TextView location;
-        @BindView(R.id.location_layout)
-        View locationLayout;
-
-        public WebcamViewHolder(View itemView) {
-            super(itemView);
-
-            ButterKnife.bind(this, itemView);
+        public WebcamViewHolder(ItemWebcamBinding binding) {
+            super(binding.getRoot());
+            this.binding = binding;
         }
     }
 

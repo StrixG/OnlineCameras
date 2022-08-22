@@ -1,35 +1,29 @@
-apply plugin: 'com.android.application'
-apply plugin: 'android-apt'
-apply plugin: 'me.tatarka.retrolambda'
-//apply plugin: 'realm-android'
+plugins {
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+}
 
 ext {
-    supportLibraryVersion = "25.0.0"
-    playServicesVersion = "9.8.0"
-    butterKnifeVersion = "8.4.0"
-    retrofitVersion = "2.1.0"
-    rxJavaVersion = "1.2.2"
+    playServicesVersion = "20.0.0"
+    retrofitVersion = "2.9.0"
+    rxJavaVersion = "1.3.8"
     rxAndroidVersion = "1.2.1"
-    moxyVersion = "1.1.2"
-    daggerVersion = "2.7"
-    gsonVersion = "2.8.0"
-    picassoVersion = "2.5.2"
+    moxyVersion = "2.2.2"
+    daggerVersion = "2.28.3"
+    gsonVersion = "2.8.9"
+    picassoVersion = "2.8"
 }
 
 android {
-    signingConfigs {
-        config {
-        }
-    }
-    compileSdkVersion 25
-    buildToolsVersion "25.0.0"
+    compileSdk 32
+
     defaultConfig {
         applicationId "com.obrekht.onlinecameras"
-        minSdkVersion 16
-        targetSdkVersion 25
+        minSdk 26
+        targetSdk 31
         versionCode 1
         versionName "1.0"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
         vectorDrawables.useSupportLibrary = true
     }
     buildTypes {
@@ -42,43 +36,37 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+    buildFeatures {
+        viewBinding true
+    }
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
-        exclude group: 'com.android.support', module: 'support-annotations'
-    })
-    // Support
-    compile "com.android.support:appcompat-v7:$supportLibraryVersion"
-    compile "com.android.support:design:$supportLibraryVersion"
-    compile "com.android.support:cardview-v7:$supportLibraryVersion"
-    compile "com.android.support:percent:$supportLibraryVersion"
-    compile "com.android.support:customtabs:$supportLibraryVersion"
-    compile "com.android.support:percent:$supportLibraryVersion"
+    // JetPack
+    implementation 'androidx.appcompat:appcompat:1.5.0'
+    implementation 'com.google.android.material:material:1.6.1'
+    implementation 'androidx.cardview:cardview:1.0.0'
+    implementation 'androidx.percentlayout:percentlayout:1.0.0'
+    implementation 'androidx.browser:browser:1.4.0'
+    implementation 'androidx.percentlayout:percentlayout:1.0.0'
+    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
     // Google Play Services
-    compile "com.google.android.gms:play-services-location:$playServicesVersion"
-    // ButterKnife
-    compile "com.jakewharton:butterknife:$butterKnifeVersion"
-    apt "com.jakewharton:butterknife-compiler:$butterKnifeVersion"
+    implementation "com.google.android.gms:play-services-location:$playServicesVersion"
     // RxJava
-    compile "io.reactivex:rxandroid:$rxAndroidVersion"
-    compile "io.reactivex:rxjava:$rxJavaVersion"
+    implementation "io.reactivex:rxandroid:$rxAndroidVersion"
+    implementation "io.reactivex:rxjava:$rxJavaVersion"
     // Retrofit
-    compile "com.squareup.retrofit2:retrofit:$retrofitVersion"
-    compile "com.squareup.retrofit2:converter-gson:$retrofitVersion"
-    compile "com.squareup.retrofit2:adapter-rxjava:$retrofitVersion"
+    implementation "com.squareup.retrofit2:retrofit:$retrofitVersion"
+    implementation "com.squareup.retrofit2:converter-gson:$retrofitVersion"
+    implementation "com.squareup.retrofit2:adapter-rxjava:$retrofitVersion"
     // Moxy
-    compile "com.arello-mobile:moxy:$moxyVersion"
-    compile "com.arello-mobile:moxy-android:$moxyVersion"
-    compile "com.arello-mobile:moxy-app-compat:$moxyVersion"
-    apt "com.arello-mobile:moxy-compiler:$moxyVersion"
+    implementation "com.github.moxy-community:moxy:$moxyVersion"
+    implementation "com.github.moxy-community:moxy-androidx:$moxyVersion"
+    annotationProcessor "com.github.moxy-community:moxy-compiler:$moxyVersion"
     // Dagger
-    compile "com.google.dagger:dagger:$daggerVersion"
-    apt "com.google.dagger:dagger-compiler:$daggerVersion"
+    implementation "com.google.dagger:dagger:$daggerVersion"
+    annotationProcessor "com.google.dagger:dagger-compiler:$daggerVersion"
 
-    compile "com.google.code.gson:gson:$gsonVersion"
-    compile "com.squareup.picasso:picasso:$picassoVersion"
-
-    testCompile 'junit:junit:4.12'
+    implementation "com.google.code.gson:gson:$gsonVersion"
+    implementation "com.squareup.picasso:picasso:$picassoVersion"
 }

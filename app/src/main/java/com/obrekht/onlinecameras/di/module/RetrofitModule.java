@@ -24,11 +24,11 @@ import rx.schedulers.Schedulers;
 public class RetrofitModule {
 
     private final String baseUrl;
-    private final String mashapeKey;
+    private final String windyKey;
 
-    public RetrofitModule(String baseUrl, String mashapeKey) {
+    public RetrofitModule(String baseUrl, String windyKey) {
         this.baseUrl = baseUrl;
-        this.mashapeKey = mashapeKey;
+        this.windyKey = windyKey;
     }
 
     @Provides
@@ -42,7 +42,7 @@ public class RetrofitModule {
                             .addQueryParameter("lang", Locale.getDefault().getLanguage()).build();
 
                     Request newRequest = request.newBuilder()
-                            .addHeader("X-Mashape-Key", mashapeKey)
+                            .addHeader("x-windy-key", windyKey)
                             .url(newUrl)
                             .build();
                     return chain.proceed(newRequest);

@@ -1,7 +1,6 @@
 package com.obrekht.onlinecameras.view;
 
-import com.arellomobile.mvp.MvpView;
+import moxy.MvpView;
 
 public interface CategoryFilterView extends MvpView {
-
 }

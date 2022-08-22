@@ -10,15 +10,15 @@
 
 package com.obrekht.onlinecameras.app;
 
+import android.app.Application;
 import android.content.Context;
 
-import com.arellomobile.mvp.MvpApplication;
 import com.obrekht.onlinecameras.di.AppComponent;
 import com.obrekht.onlinecameras.di.DaggerAppComponent;
 import com.obrekht.onlinecameras.di.module.ContextModule;
 import com.obrekht.onlinecameras.di.module.RetrofitModule;
 
-public class WebcamsApp extends MvpApplication {
+public class WebcamsApp extends Application {
 
     private static AppComponent appComponent;
 
@@ -28,8 +28,8 @@ public class WebcamsApp extends MvpApplication {
 
         appComponent = DaggerAppComponent.builder()
                 .contextModule(new ContextModule(this))
-                .retrofitModule(new RetrofitModule("https://webcamstravel.p.mashape.com/webcams/",
-                        "qzg5ev8xnumshtEkxiDM8GffBmdnp1CwCGMjsnCPPkUVcQwajO"))
+                .retrofitModule(new RetrofitModule("https://api.windy.com/api/webcams/v2/",
+                        "uZxwZIdYVmxAF0pDjEIkcRfbX5qI3yTF"))
                 .build();
     }
 

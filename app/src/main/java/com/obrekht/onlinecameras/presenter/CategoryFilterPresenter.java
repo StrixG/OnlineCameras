@@ -1,9 +1,11 @@
 package com.obrekht.onlinecameras.presenter;
 
-import com.arellomobile.mvp.MvpPresenter;
 import com.obrekht.onlinecameras.model.WebcamCategory;
+import com.obrekht.onlinecameras.view.CategoryFilterView;
 
-public class CategoryFilterPresenter extends MvpPresenter {
+import moxy.MvpPresenter;
+
+public class CategoryFilterPresenter extends MvpPresenter<CategoryFilterView> {
 
     private WebcamCategory currentCategory;
 
