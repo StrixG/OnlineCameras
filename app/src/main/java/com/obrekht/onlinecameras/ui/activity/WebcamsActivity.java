@@ -96,13 +96,6 @@ public class WebcamsActivity extends MvpAppCompatActivity implements WebcamsView
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-
-        webcamsPresenter.loadWebcams(false);
-    }
-
-    @Override
     public void onBackPressed() {
         if (filterDrawer.isDrawerOpen(GravityCompat.END)) {
             filterDrawer.closeDrawer(GravityCompat.END);

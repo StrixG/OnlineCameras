@@ -52,6 +52,13 @@ public class WebcamsPresenter extends MvpPresenter<WebcamsView> {
     }
 
     @Override
+    protected void onFirstViewAttach() {
+        super.onFirstViewAttach();
+
+        loadWebcams(false);
+    }
+
+    @Override
     public void onDestroy() {
         super.onDestroy();
     }
