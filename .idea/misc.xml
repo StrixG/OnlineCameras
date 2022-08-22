@@ -3,15 +3,18 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Dev/Android/Webcams/app/src/main/res/layout/activity_main.xml" value="0.21041666666666667" />
         <entry key="..\:/Dev/Android/Webcams/app/src/main/res/layout/content_main.xml" value="0.21354166666666666" />
+        <entry key="..\:/Dev/Android/Webcams/app/src/main/res/layout/filter_list.xml" value="0.21041666666666667" />
         <entry key="..\:/Dev/Android/Webcams/app/src/main/res/layout/item_webcam.xml" value="0.21354166666666666" />
+        <entry key="..\:/Dev/Android/Webcams/app/src/main/res/layout/toolbar.xml" value="0.21041666666666667" />
       </map>
     </option>
   </component>
   <component name="ExternalStorageConfigurationManager" enabled="true" />
   <component name="NullableNotNullManager">
     <option name="myDefaultNullable" value="android.support.annotation.Nullable" />
-    <option name="myDefaultNotNull" value="android.support.annotation.NonNull" />
+    <option name="myDefaultNotNull" value="androidx.annotation.NonNull" />
     <option name="myNullables">
       <value>
         <list size="12">

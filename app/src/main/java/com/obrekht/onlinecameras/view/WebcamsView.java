@@ -25,7 +25,9 @@ public interface WebcamsView extends MvpView {
     @StateStrategyType(SkipStrategy.class)
     void showWebcam(Webcam webcam);
 
-    void showError(@StringRes int resId);
+    void showErrorWithMessage(@StringRes int resId);
+
+    void showError();
 
     void showLocationPermissionError();
 
